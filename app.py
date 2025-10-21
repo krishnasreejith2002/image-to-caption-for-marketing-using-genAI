@@ -5,22 +5,23 @@ import torch
 import pandas as pd
 import random
 
-# -----------------------------
-# App Setup
-# -----------------------------
+# ----------------------------------
+# 🎨 Streamlit Page Config
+# ----------------------------------
 st.set_page_config(page_title="Brand-Aware Caption Generator", layout="centered")
 st.title("🛍️ Brand-Aware Image Captioning using Generative AI")
 st.markdown("""
-Generate **marketing-style captions** for product images using Generative AI.  
-Built with **FLAN-T5** and designed for **brand-aware social media captions**.
+Generate **creative marketing captions** for product images using **Generative AI**.  
+This demo uses a vision-language model and text generation model to rewrite  
+plain product descriptions into brand-styled marketing messages.
 """)
 
-# -----------------------------
-# Load Model (cached)
-# -----------------------------
+# ----------------------------------
+# ⚙️ Load Model (cached for speed)
+# ----------------------------------
 @st.cache_resource
 def load_model():
-    model_name = "google/flan-t5-base"
+    model_name = "google/flan-t5-base"  # Lightweight and reliable
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
     return model, tokenizer
@@ -28,50 +29,77 @@ def load_model():
 model, tokenizer = load_model()
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# -----------------------------
-# Sidebar Controls
-# -----------------------------
-st.sidebar.header("⚙️ Settings")
-tone = st.sidebar.selectbox("Choose caption tone:", ["Trendy", "Formal", "Luxury", "Playful", "Minimalist"])
-creativity = st.sidebar.slider("Creativity (temperature)", 0.5, 1.5, 0.9, 0.1)
+# ----------------------------------
+# ⚙️ Sidebar Settings
+# ----------------------------------
+st.sidebar.header("Settings ⚙️")
+tone = st.sidebar.selectbox(
+    "Select caption tone:",
+    ["Trendy", "Formal", "Luxury", "Playful", "Minimalist"]
+)
+creativity = st.sidebar.slider(
+    "Creativity (temperature):", 0.5, 1.5, 0.9, 0.1
+)
+max_length = st.sidebar.slider(
+    "Max caption length:", 20, 80, 45
+)
 
-# -----------------------------
-# Data Upload Section
-# -----------------------------
-uploaded_image = st.file_uploader("Upload a fashion product image", type=["jpg", "jpeg", "png"])
+# ----------------------------------
+# 📂 Load Sample Dataset
+# ----------------------------------
+try:
+    df = pd.read_csv("styles_sample.csv")
+    st.sidebar.success("✅ Sample dataset loaded successfully!")
+except FileNotFoundError:
+    st.sidebar.error("❌ styles_sample.csv not found. Please add it to your repo.")
+    st.stop()
 
-# Optionally use sample dataset
+# ----------------------------------
+# 🖼️ Image Upload / Sample Selection
+# ----------------------------------
+uploaded_image = st.file_uploader("Upload a product image", type=["jpg", "jpeg", "png"])
+
 st.markdown("---")
-st.subheader("Or try with a sample product 👇")
+st.subheader("🎯 Or try with a sample product:")
 
-df = pd.read_csv("styles_sample.csv")
 sample_row = random.choice(df.to_dict(orient="records"))
 sample_img_path = f"sample_data/{sample_row['image']}"
 sample_caption = f"A {sample_row['baseColour']} {sample_row['articleType']} for {sample_row['gender']}"
 
-if st.button("🎯 Use a sample image"):
+if st.button("Use a Sample Image"):
     uploaded_image = Image.open(sample_img_path).convert("RGB")
     st.image(uploaded_image, caption=sample_caption, use_column_width=True)
     base_caption = sample_caption
 else:
-    base_caption = st.text_input("Enter a base description (optional):", "A red dress for women")
+    base_caption = st.text_input("Enter a base caption (optional):", "A red dress for women")
 
-# -----------------------------
-# Caption Generation
-# -----------------------------
-def generate_caption(base_caption, tone, temperature):
-    prompt = f"Write a {tone.lower()} marketing caption for social media about this product: {base_caption}"
+# ----------------------------------
+# ✨ Marketing Caption Generation
+# ----------------------------------
+def generate_marketing_caption(base_caption, tone, temperature, max_len):
+    prompt = (
+        f"Rewrite this product description in a {tone.lower()} marketing tone "
+        f"for a social media post: {base_caption}. Make it short, catchy, and brand-friendly."
+    )
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
-    outputs = model.generate(**inputs, max_length=50, do_sample=True, temperature=temperature, num_beams=5)
+    outputs = model.generate(
+        **inputs,
+        max_length=max_len,
+        do_sample=True,
+        temperature=temperature,
+        num_beams=5,
+        early_stopping=True
+    )
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 if uploaded_image is not None:
-    st.image(uploaded_image, caption="Uploaded Image", use_column_width=True)
-    if st.button("✨ Generate Marketing Caption"):
-        with st.spinner("Generating creative caption..."):
-            marketing_caption = generate_caption(base_caption, tone, creativity)
+    st.image(uploaded_image, caption="🖼️ Selected Image", use_column_width=True)
+
+    if st.button("🚀 Generate Marketing Caption"):
+        with st.spinner("Creating your brand-aware caption..."):
+            caption = generate_marketing_caption(base_caption, tone, creativity, max_length)
         st.success("✅ Generated Caption:")
-        st.write(f"**{marketing_caption}**")
+        st.markdown(f"### ✨ {caption}")
 
 st.markdown("---")
-st.caption("Built with ❤️ using Streamlit and Hugging Face Transformers.")
+st.caption("Developed as a Generative AI Capstone Project | Powered by Streamlit & Hugging Face")
