@@ -21,7 +21,8 @@ using a generative model trained for instruction following (FLAN-T5).
 # ----------------------------------
 @st.cache_resource
 def load_model():
-    model_name = "google/flan-t5-base"  # you can switch to flan-t5-large for richer captions
+    model_name ="./brand_model"
+"  # you can switch to flan-t5-large for richer captions
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
     return model, tokenizer
