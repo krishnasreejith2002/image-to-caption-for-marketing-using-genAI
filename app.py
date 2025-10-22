@@ -61,23 +61,23 @@ This demo shows how **Generative AI** can transform product descriptions into en
 # 📁 Image-Caption Mapping
 # ----------------------------
 image_captions = {
-    "grey_shoes.jpg": {
+    "grey_shoes.jpg.jpg": {
         "base": "Grey formal shoes for men.",
         "marketing": "Step into sophistication with our classic grey formal shoes 👞 — where comfort meets class. Perfect for the boardroom or beyond. #SmartLook #StyleThatSpeaks"
     },
-    "brown_jacket.jpg": {
+    "brown_jacket.jpg.jpg": {
         "base": "A brown jacket for men.",
         "marketing": "Stay warm and stylish with our rugged brown jacket 🧥 — crafted for confidence and comfort. Own the season in style! #WinterVibes #BoldAndClassic"
     },
-    "blue_jeans.jpg": {
+    "blue_jeans.jpg.jpg": {
         "base": "Blue jeans for men.",
         "marketing": "Classic fit, timeless style. Rock your day in our versatile blue jeans 👖 — made for every mood, every move. #DenimVibes #EverydayEssential"
     },
-    "white_sneakers.jpg": {
+    "white_sneakers.jpg.jpg": {
         "base": "White sneakers for men.",
         "marketing": "Step into comfort and confidence with our crisp white sneakers 👟 — minimal, clean, and made to move. #EverydayStyle #FreshKicks"
     },
-    "red_dress.jpg": {
+    "red_dress.jpg.jpg": {
         "base": "A red dress for women.",
         "marketing": "Turn heads in our stunning red dress ❤️ — elegant, bold, and made to make memories. Perfect for every occasion! #StyleGoals #RedHotFashion"
     }
