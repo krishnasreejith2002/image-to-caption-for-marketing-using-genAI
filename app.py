@@ -83,6 +83,7 @@ into stylish, brand-ready **marketing captions**.
 # 📁 Image-Caption Mapping
 # ----------------------------
 image_captions = {
+   
     "grey_shoes.jpg": {
         "base": "Grey formal shoes for men.",
         "marketing": "Step into sophistication with our classic grey formal shoes 👞 — where comfort meets class. Perfect for the boardroom or beyond. #SmartLook #StyleThatSpeaks"
@@ -104,6 +105,7 @@ image_captions = {
         "marketing": "Turn heads in our stunning red dress ❤️ — elegant, bold, and made to make memories. Perfect for every occasion! #StyleGoals #RedHotFashion"
     }
 }
+
 
 # ----------------------------
 # 🖼️ File Uploader
@@ -145,7 +147,7 @@ if uploaded_file:
         st.write(", ".join(list(image_captions.keys())))
 
 else:
-    st.info("📤 Upload one of the sample images (red_dress.jpg, brown_jacket.jpg, white_sneakers.jpg, etc.) to see results.")
+    st.info("📤 Upload one of the sample images to see results.")
 
 # ----------------------------
 # 🧾 Footer
