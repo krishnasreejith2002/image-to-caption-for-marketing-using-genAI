@@ -5,7 +5,52 @@ import os
 # ----------------------------
 # 🧠 App Configuration
 # ----------------------------
-st.set_page_config(page_title="Brand-Aware Captioning Demo", page_icon="🧠", layout="centered")
+st.set_page_config(page_title="Brand-Aware Captioning Demo", page_icon="🛍️", layout="centered")
+st.markdown("""
+    <style>
+    /* Title Styling */
+    h1 {
+        color: #E91E63;
+        text-align: center;
+        font-size: 2.4em;
+        font-weight: bold;
+    }
+
+    /* Captions */
+    .stSuccess {
+        background-color: #FFF8FB;
+        border-left: 4px solid #E91E63;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 1.1em;
+    }
+
+    /* Buttons */
+    div.stButton > button:first-child {
+        background-color: #E91E63;
+        color: white;
+        font-weight: 600;
+        border-radius: 10px;
+        height: 3em;
+        width: 12em;
+        border: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+    div.stButton > button:first-child:hover {
+        background-color: #C2185B;
+        transform: scale(1.05);
+    }
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: #F8E8EE;
+    }
+
+    /* Footer */
+    footer {visibility: hidden;}
+    </style>
+""", unsafe_allow_html=True)
 
 st.title("🧠 Brand-Aware Image Captioning for Marketing Applications")
 st.markdown("""
