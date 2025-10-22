@@ -12,8 +12,8 @@ st.set_page_config(page_title="Brand-Aware Caption Generator", layout="centered"
 st.title("🛍️ Brand-Aware Image Captioning using Generative AI")
 st.markdown("""
 Generate **creative marketing captions** for product images using **Generative AI**.  
-This demo uses a vision-language model and text generation model to rewrite  
-plain product descriptions into brand-styled marketing messages.
+This demo uses a text generation model (FLAN-T5) to rewrite plain descriptions  
+into **catchy, brand-styled marketing messages** for social media or e-commerce.
 """)
 
 # ----------------------------------
@@ -21,7 +21,7 @@ plain product descriptions into brand-styled marketing messages.
 # ----------------------------------
 @st.cache_resource
 def load_model():
-    model_name = "google/flan-t5-base"  # Lightweight and reliable
+    model_name = "google/flan-t5-base"  # You can switch to flan-t5-large for better quality
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
     return model, tokenizer
@@ -38,10 +38,10 @@ tone = st.sidebar.selectbox(
     ["Trendy", "Formal", "Luxury", "Playful", "Minimalist"]
 )
 creativity = st.sidebar.slider(
-    "Creativity (temperature):", 0.5, 1.5, 0.9, 0.1
+    "Creativity (temperature):", 0.5, 1.5, 1.1, 0.1
 )
 max_length = st.sidebar.slider(
-    "Max caption length:", 20, 80, 45
+    "Max caption length:", 20, 80, 50
 )
 
 # ----------------------------------
@@ -74,24 +74,34 @@ else:
     base_caption = st.text_input("Enter a base caption (optional):", "A red dress for women")
 
 # ----------------------------------
-# ✨ Marketing Caption Generation
+# ✨ Marketing Caption Generation (Enhanced)
 # ----------------------------------
 def generate_marketing_caption(base_caption, tone, temperature, max_len):
     prompt = (
-        f"Rewrite this product description in a {tone.lower()} marketing tone "
-        f"for a social media post: {base_caption}. Make it short, catchy, and brand-friendly."
+        f"You are a professional marketing copywriter. "
+        f"Transform the following plain product description into a {tone.lower()} social media caption. "
+        f"Make it catchy, emotional, and persuasive. Add hashtags or emojis if natural. "
+        f"Focus on brand appeal and customer engagement.\n\n"
+        f"Product: {base_caption}\n"
+        f"Marketing caption:"
     )
+
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
     outputs = model.generate(
         **inputs,
         max_length=max_len,
         do_sample=True,
         temperature=temperature,
-        num_beams=5,
+        top_p=0.92,             # encourages creative diversity
+        repetition_penalty=1.3,  # prevents copying input
+        num_beams=1,            # pure sampling for creativity
         early_stopping=True
     )
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
+# ----------------------------------
+# 🚀 Caption Generation Interface
+# ----------------------------------
 if uploaded_image is not None:
     st.image(uploaded_image, caption="🖼️ Selected Image", use_column_width=True)
 
@@ -102,4 +112,4 @@ if uploaded_image is not None:
         st.markdown(f"### ✨ {caption}")
 
 st.markdown("---")
-st.caption("Developed as a Generative AI Capstone Project | Powered by Streamlit & Hugging Face")
+st.caption("Developed as a Generative AI Capstone Project | Powered by Streamlit & Hugging Face Transformers")
