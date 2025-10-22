@@ -12,8 +12,8 @@ st.set_page_config(page_title="Brand-Aware Caption Generator", layout="centered"
 st.title("🛍️ Brand-Aware Image Captioning using Generative AI")
 st.markdown("""
 Generate **creative marketing captions** for product images using **Generative AI**.  
-This demo uses a text generation model (FLAN-T5) to rewrite plain descriptions  
-into **catchy, brand-styled marketing messages** for social media or e-commerce.
+This app rewrites plain product descriptions into catchy, brand-styled marketing messages  
+using a generative model trained for instruction following (FLAN-T5).
 """)
 
 # ----------------------------------
@@ -21,7 +21,7 @@ into **catchy, brand-styled marketing messages** for social media or e-commerce.
 # ----------------------------------
 @st.cache_resource
 def load_model():
-    model_name = "google/flan-t5-base"  # You can switch to flan-t5-large for better quality
+    model_name = "google/flan-t5-base"  # you can switch to flan-t5-large for richer captions
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
     return model, tokenizer
@@ -66,7 +66,7 @@ sample_row = random.choice(df.to_dict(orient="records"))
 sample_img_path = f"sample_data/{sample_row['image']}"
 sample_caption = f"A {sample_row['baseColour']} {sample_row['articleType']} for {sample_row['gender']}"
 
-if st.button("Use a Sample Image"):
+if st.button("🎨 Use a Sample Image"):
     uploaded_image = Image.open(sample_img_path).convert("RGB")
     st.image(uploaded_image, caption=sample_caption, use_column_width=True)
     base_caption = sample_caption
@@ -74,7 +74,7 @@ else:
     base_caption = st.text_input("Enter a base caption (optional):", "A red dress for women")
 
 # ----------------------------------
-# ✨ Marketing Caption Generation (Enhanced)
+# ✨ Marketing Caption Generation
 # ----------------------------------
 def generate_marketing_caption(base_caption, tone, temperature, max_len):
     prompt = (
@@ -92,24 +92,33 @@ def generate_marketing_caption(base_caption, tone, temperature, max_len):
         max_length=max_len,
         do_sample=True,
         temperature=temperature,
-        top_p=0.92,             # encourages creative diversity
-        repetition_penalty=1.3,  # prevents copying input
-        num_beams=1,            # pure sampling for creativity
+        top_p=0.92,
+        repetition_penalty=1.3,
+        num_beams=1,
         early_stopping=True
     )
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 # ----------------------------------
-# 🚀 Caption Generation Interface
+# 🚀 Generate and Compare Captions
 # ----------------------------------
 if uploaded_image is not None:
     st.image(uploaded_image, caption="🖼️ Selected Image", use_column_width=True)
 
-    if st.button("🚀 Generate Marketing Caption"):
+    if st.button("🚀 Generate & Compare Captions"):
         with st.spinner("Creating your brand-aware caption..."):
-            caption = generate_marketing_caption(base_caption, tone, creativity, max_length)
-        st.success("✅ Generated Caption:")
-        st.markdown(f"### ✨ {caption}")
+            marketing_caption = generate_marketing_caption(base_caption, tone, creativity, max_length)
+        
+        st.success("✅ Caption Comparison:")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("#### 🧾 Base Caption")
+            st.info(base_caption)
+
+        with col2:
+            st.markdown("#### 💬 Marketing Caption")
+            st.success(marketing_caption)
 
 st.markdown("---")
 st.caption("Developed as a Generative AI Capstone Project | Powered by Streamlit & Hugging Face Transformers")
